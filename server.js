@@ -24,7 +24,6 @@ mongoose.connect("mongodb://localhost/userdb", { useNewUrlParser: true });
 var databaseUrl = "scraper";
 var collections = ["scrapedData"];
 
-// Hook mongojs configuration to the db variable
 var db = mongojs(databaseUrl, collections);
 db.on("error", function(error) {
   console.log("Database Error:", error);
@@ -52,10 +51,10 @@ app.get("/all", function(req, res) {
 
 // Scrape data from one site and place it into the mongodb db
 app.get("/scrape", function(req, res) {
-  axios.get("https://news.ycombinator.com/").then(function(response) {
+  axios.get("https://www.nytimes.com/section/us").then(function(response) {
     var $ = cheerio.load(response.data);
 
-    $(".title").each(function(i, element) {
+    $("article").each(function(i, element) {
       var title = $(element)
         .children("a")
         .text();
@@ -63,23 +62,25 @@ app.get("/scrape", function(req, res) {
         .children("a")
         .attr("href");
 
-      if (title && link) {
-        db.scrapedData.insert(
-          {
-            title: title,
-            link: link
-          },
-          function(err, inserted) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log(inserted);
-            }
-          }
-        );
-      }
+      //   if (title && link) {
+      //     db.scrapedData.insert(
+      //       {
+      //         title: title,
+      //         link: link
+      //       },
+      //       function(err, inserted) {
+      //         if (err) {
+      //           console.log(err);
+      //         } else {
+      //           console.log(inserted);
+      //         }
+      //       }
+      //     );
+      //   }
     });
   });
+  console.log(title);
+  console.log(link);
 
   res.send("Scrape Complete");
 });
