@@ -1,34 +1,25 @@
-// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
+var express = require("express");
+var logger = require("morgan");
+var mongoose = require("mongoose");
+var axios = require("axios");
+var cheerio = require("cheerio");
+
+var PORT = 3000;
+
+var app = express();
+
 var MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
 mongoose.connect(MONGODB_URI);
 
-var express = require("express");
-var logger = require("morgan");
-var mongoose = require("mongoose");
-
-var PORT = 3000;
-
-// Require axios and cheerio. This makes the scraping possible
-var axios = require("axios");
-var cheerio = require("cheerio");
-
-// Initialize Express
-var app = express();
-
-// Use morgan logger for logging requests
 app.use(logger("dev"));
-// Parse request body as JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// Make public a static folder
 app.use(express.static("public"));
 
-// Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/userdb", { useNewUrlParser: true });
 
-// Database configuration
 var databaseUrl = "scraper";
 var collections = ["scrapedData"];
 
