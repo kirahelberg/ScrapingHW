@@ -5,7 +5,7 @@ var axios = require("axios");
 var cheerio = require("cheerio");
 var mongojs = require("mongojs");
 
-var PORT = 3000;
+var PORT = process.env.PORT || 3000;
 
 var app = express();
 
@@ -85,6 +85,6 @@ app.get("/scrape", function(req, res) {
 });
 
 // Listen on port 3000
-app.listen(3000, function() {
+app.listen(PORT, function() {
   console.log("App running on port 3000!");
 });
