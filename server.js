@@ -4,6 +4,7 @@ var mongoose = require("mongoose");
 var axios = require("axios");
 var cheerio = require("cheerio");
 var mongojs = require("mongojs");
+var Article = require("./Article");
 
 var PORT = process.env.PORT || 3000;
 
@@ -21,50 +22,80 @@ app.use(express.static("public"));
 
 mongoose.connect("mongodb://localhost/scarperHW", { useNewUrlParser: true });
 
-// Database configuration
-var databaseUrl = "scraperHW";
-var collections = ["scrapedData"];
-
 // Hook mongojs configuration to the db variable
 var db = mongojs(databaseUrl, collections);
 db.on("error", function(error) {
   console.log("Database Error:", error);
 });
 
-//------------------------------------
-//HTML ROUTES
-app.get("/", function(req, res) {
-  res.send("Hello world");
-});
+//HTML ROUTES ------------------------------------
 
-app.get("/all", function(req, res) {
-  db.scrapedData.find({}, function(error, found) {
-    if (error) {
-      console.log(error);
-    } else {
-      res.json(found);
-    }
-  });
-});
+// A GET route for scraping the NPR website
+app.get("/scrape", function(req, res) {
+  axios.get("https://www.npr.org/").then(function(response) {
+    var $ = cheerio.load(response.data);
 
-axios.get("https://www.npr.org/").then(function(response) {
-  var $ = cheerio.load(response.data);
-  var results = [];
+    var result = {};
 
-  $(".story-text").each(function(i, element) {
-    var title = $(element)
-      .children(".title")
-      .text();
-    var link = $(element)
-      .children("a")
-      .attr("href");
-    results.push({
-      title: title,
-      link: link
+    $(".story-text").each(function(i, element) {
+      results.title = $(this)
+        .children(".title")
+        .text();
+      results.link = $(element)
+        .children("a")
+        .attr("href");
+
+      db.Article.create(result)
+        .then(function(dbArticle) {
+          console.log(dbArticle);
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
     });
+    res.send("Scrape Complete");
   });
-  console.log(results);
-  db.scrapedData.insert(results);
+});
+
+// Route for getting all Articles from the db
+app.get("/articles", function(req, res) {
+  db.Article.find({})
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+// Route for grabbing a specific Article by id, populate it with it's note
+app.get("/articles/:id", function(req, res) {
+  db.Article.findOne({ _id: req.params.id })
+    .populate("note")
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
+});
+
+// Route for saving/updating an Article's associated Note
+app.post("/articles/:id", function(req, res) {
+  db.Note.create(req.body)
+    .then(function(dbNote) {
+      return db.Article.findOneAndUpdate(
+        { _id: req.params.id },
+        { note: dbNote._id },
+        { new: true }
+      );
+    })
+    .then(function(dbArticle) {
+      res.json(dbArticle);
+    })
+    .catch(function(err) {
+      res.json(err);
+    });
 });
 
 //------------------------------------

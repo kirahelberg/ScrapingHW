@@ -28,12 +28,12 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item active">
-            <a class="nav-link" href="#"
+            <a class="nav-link" href="index.html"
               >Home <span class="sr-only">(current)</span></a
             >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Saved Articles</a>
+            <a class="nav-link" href="saved.html">Saved Articles</a>
           </li>
           <button class="btn btn-dark" type="button">
             Scrape New Articles
@@ -47,14 +47,16 @@
       <div class="container">
         <h1 class="display-4">Mongo Scraper</h1>
         <p class="lead">
-          Refinery29 Edition.
+          NPR Edition.
         </p>
       </div>
     </div>
 
     <!-- Display of articles -->
-    <div class="articleList">
-      <p>Articles will display below</p>
-    </div>
+    <div id="articleList"></div>
+
+    <!-- Link to javascript file and jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="app.js"></script>
   </body>
 </html>
