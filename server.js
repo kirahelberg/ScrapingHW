@@ -45,7 +45,6 @@ app.get("/scrape", function(req, res) {
         link: link
       });
     });
-
     db.Article.create(results)
       .then(function(dbArticle) {
         console.log(dbArticle);

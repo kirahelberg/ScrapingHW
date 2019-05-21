@@ -3,16 +3,19 @@ $("#scrape-btn").on("click", function() {
   $.getJSON("/articles", function(data) {
     data.forEach(function(article) {
       $("#articles").append(
-        `<p data-id='${data[i]._id}'> ${data[i].title} <br /> ${
-          data[i].link
-        } </p>`
+        `<div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title" id=${data[article]._id}>${
+          data[article].title
+        }</h5>
+          <a href="${data[article].link}" class="card-link">Visit Article</a>
+        </div>
+      </div>>`
       );
-      console.log(article);
     });
   });
 });
 
-// Whenever someone clicks a p tag
 $(document).on("click", "p", function() {
   $("#notes").empty();
   var thisId = $(this).attr("data-id");
