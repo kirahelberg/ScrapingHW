@@ -60,6 +60,7 @@ app.get("/scrape", function(req, res) {
 app.get("/articles", function(req, res) {
   db.Article.find({})
     .then(function(dbArticle) {
+      console.log("[GET articles] articles", dbArticle);
       res.json(dbArticle);
     })
     .catch(function(err) {
